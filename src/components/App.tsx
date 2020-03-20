@@ -260,7 +260,7 @@ export class App extends React.Component<any, AppState> {
         clearTimeout(initializationTimer);
         isInitialized = true;
         if (this.state.isLoading && !this.unmounted) {
-          this.setState(() => ({ isLoading: false }));
+          this.setState({ isLoading: false });
         }
       };
       const INIT_TIMEOUT = 5000;
