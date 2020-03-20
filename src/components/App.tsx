@@ -495,6 +495,24 @@ export class App extends React.Component<any, AppState> {
       }
     }
 
+    // rerender text elements on font load to fix #637
+    try {
+      await Promise.race([
+        document.fonts?.ready?.then(() => {
+          globalSceneState.getAllElements().forEach(element => {
+            if (isTextElement(element)) {
+              invalidateShapeForElement(element);
+            }
+          });
+          this.setState({ isLoading: false });
+        }),
+        // if fonts don't load in 1s for whatever reason, don't block the UI
+        new Promise(resolve => setTimeout(resolve, 1000)),
+      ]);
+    } catch (error) {
+      console.error(error);
+    }
+
     if (this.state.isLoading) {
       this.setState({ isLoading: false });
     }

@@ -2,6 +2,12 @@ interface Window {
   ClipboardItem: any;
 }
 
+interface Document {
+  fonts?: {
+    ready?: Promise<void>;
+  };
+}
+
 interface Clipboard extends EventTarget {
   write(data: any[]): Promise<void>;
 }
