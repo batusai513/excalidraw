@@ -244,17 +244,17 @@ export class App extends React.Component<any, AppState> {
     }
   };
 
-  private initializeSocketClient = () => {
+  private initializeSocketClient = (
+    opts: { showLoadingState: boolean } = {
+      showLoadingState: true,
+    },
+  ) => {
     if (this.socket) {
       return;
     }
     const roomMatch = getCollaborationLinkData(window.location.href);
     if (roomMatch) {
-      let isInitialized = false;
-      this.setState({
-        isCollaborating: true,
-        isLoading: true,
-      });
+      let isInitialized = !opts.showLoadingState;
       this.socket = socketIOClient(SOCKET_SERVER);
       this.roomID = roomMatch[1];
       this.roomKey = roomMatch[2];
@@ -411,6 +411,11 @@ export class App extends React.Component<any, AppState> {
       });
       this.socket.on("new-user", async (socketID: string) => {
         this.broadcastSceneUpdate();
+      });
+
+      this.setState({
+        isCollaborating: true,
+        isLoading: !isInitialized ? true : this.state.isLoading,
       });
     }
   };
@@ -820,7 +825,7 @@ export class App extends React.Component<any, AppState> {
       "Excalidraw",
       await generateCollaborationLink(),
     );
-    this.initializeSocketClient();
+    this.initializeSocketClient({ showLoadingState: false });
   };
 
   destroyRoom = () => {
