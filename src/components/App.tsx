@@ -222,6 +222,7 @@ export class App extends React.Component<any, AppState> {
   });
 
   private onUnload = withBatchedUpdates(() => {
+    this.destroySocketClient();
     isHoldingSpace = false;
     this.saveDebounced();
     this.saveDebounced.flush();
@@ -255,6 +256,16 @@ export class App extends React.Component<any, AppState> {
     const roomMatch = getCollaborationLinkData(window.location.href);
     if (roomMatch) {
       let isInitialized = !opts.showLoadingState;
+      const initialize = () => {
+        clearTimeout(initializationTimer);
+        isInitialized = true;
+        if (this.state.isLoading && !this.unmounted) {
+          this.setState(() => ({ isLoading: false }));
+        }
+      };
+      const INIT_TIMEOUT = 5000;
+      let initializationTimer = setTimeout(initialize, INIT_TIMEOUT);
+
       this.socket = socketIOClient(SOCKET_SERVER);
       this.roomID = roomMatch[1];
       this.roomKey = roomMatch[2];
@@ -276,17 +287,15 @@ export class App extends React.Component<any, AppState> {
           switch (decryptedData.type) {
             case "INVALID_RESPONSE":
               return;
-            case "SCENE_UPDATE":
+            case "SCENE_UPDATE": {
+              if (!isInitialized) {
+                initialize();
+              }
+
               const { elements: remoteElements } = decryptedData.payload;
               const restoredState = restore(remoteElements || [], null, {
                 scrollToContent: true,
               });
-              if (!isInitialized && this.state.isLoading) {
-                isInitialized = true;
-                this.setState({
-                  isLoading: false,
-                });
-              }
               // Perform reconciliation - in collaboration, if we encounter
               // elements with more staler versions than ours, ignore them
               // and keep ours.
@@ -365,7 +374,8 @@ export class App extends React.Component<any, AppState> {
                 this.socketInitialized = true;
               }
               break;
-            case "MOUSE_LOCATION":
+            }
+            case "MOUSE_LOCATION": {
               const { socketID, pointerCoords } = decryptedData.payload;
               this.setState(state => {
                 if (!state.collaborators.has(socketID)) {
@@ -377,6 +387,7 @@ export class App extends React.Component<any, AppState> {
                 return state;
               });
               break;
+            }
           }
         },
       );
@@ -400,7 +411,10 @@ export class App extends React.Component<any, AppState> {
           //  so initialize early
           const initializeEarly = !isInitialized && clients.length < 2;
           if (initializeEarly) {
-            isInitialized = true;
+            initialize();
+          } else if (!isInitialized) {
+            clearTimeout(initializationTimer);
+            initializationTimer = setTimeout(initialize, INIT_TIMEOUT);
           }
           return {
             ...state,
