@@ -73,7 +73,7 @@
     "clearReset": "Esto limpiará todo el lienzo. Estás seguro?",
     "couldNotCreateShareableLink": "No se pudo crear un enlace para compartir.",
     "importBackendFailed": "La importación falló.",
-    "cannotExportEmptyCanvas": "No se puede exportar un lienzo vació",
+    "cannotExportEmptyCanvas": "No se puede exportar un lienzo vacio",
     "couldNotCopyToClipboard": "No se ha podido copiar al portapapeles, intente usar Chrome como navegador.",
     "decryptFailed": "No se pudieron descifrar los datos.",
     "uploadedSecurly": "La carga ha sido asegurada con cifrado de extremo a extremo, lo que significa que el servidor de Excalidraw y terceros no pueden leer el contenido."
@@ -107,7 +107,7 @@
     "openIssueMessage_pre": "Antes de hacerlo, le agradeceríamos que abriera un problema en nuestro ",
     "openIssueMessage_button": "seguimiento de errores.",
     "openIssueMessage_post": " Por favor incluya la siguiente pila de seguimiento de errores (y si no es privado, también el contenido de la escena):",
-    "errorStack": "Error stack trace:",
+    "errorStack": "Traza de llamadas de errores:",
     "errorStack_loading": "Cargando los datos, por favor espere...",
     "sceneContent": "Contenido de la escena:"
   },
